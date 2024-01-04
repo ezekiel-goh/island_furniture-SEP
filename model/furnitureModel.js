@@ -43,6 +43,50 @@ var furnitureDB = {
         });
     },
 
+    getOffersAndPromotions: function () {
+        return new Promise( ( resolve, reject ) => {
+            var conn = db.getConnection();
+            conn.connect(function (err) {
+                if (err) {
+                    console.log(err);
+                    conn.end();
+                    return reject(err);
+                }
+                else {
+                    var sql = 'WITH ranked_items AS (SELECT i.ID as id, i.NAME as name, f.IMAGEURL as imageURL, i.SKU as sku, i.DESCRIPTION as description, i.TYPE as type, i._LENGTH as length, i.WIDTH as width, i.HEIGHT as height, i.CATEGORY as category, ic.RETAILPRICE as price, fP.newPrice as promo, ROW_NUMBER() OVER (ORDER BY i.ID) as row_num FROM itementity i JOIN furnitureentity f ON i.ID = f.ID LEFT JOIN item_countryentity ic ON i.ID = ic.ITEM_ID AND ic.COUNTRY_ID = 25 LEFT JOIN furniturePromo fP ON fP.ID = i.ID WHERE i.ISDELETED = FALSE) SELECT id, name, imageURL, sku, description, type, length, width, height, category, price, promo FROM ranked_items WHERE row_num IN (1, 2, 9, 13, 20, 23, 31, 34, 36, 43, 45, 63)';
+                    ;
+                    ;
+                    conn.query(sql, function (err, result) {
+                        if (err) {
+                            conn.end();
+                            return reject(err);g
+                        } else {
+                            var furList = [];
+                            for(var i = 0; i < result.length; i++) {
+                                var fur = new Furniture();
+                                fur.id = result[i].id;
+                                fur.name = result[i].name;
+                                fur.imageURL = result[i].imageURL;
+                                fur.sku = result[i].sku;
+                                fur.description = result[i].description;
+                                fur.type = result[i].type;
+                                fur.length = result[i].length;
+                                fur.width = result[i].width;
+                                fur.height = result[i].height;
+                                fur.category = result[i].category;
+                                fur.price = result[i].price;
+                                fur.promo = result[i].promo;
+                                furList.push(fur);
+                            }
+                            conn.end();
+                            return resolve(furList);
+                        }
+                    });
+                }
+            });
+        });
+    },
+
     getLastChanceFurniture: function () {
         return new Promise( ( resolve, reject ) => {
             var conn = db.getConnection();
@@ -53,7 +97,7 @@ var furnitureDB = {
                     return reject(err);
                 }
                 else {
-                    var sql = 'WITH ranked_items AS (SELECT i.ID as id, i.NAME as name, f.IMAGEURL as imageURL, i.SKU as sku, i.DESCRIPTION as description, i.TYPE as type, i._LENGTH as length, i.WIDTH as width, i.HEIGHT as height, i.CATEGORY as category, ic.RETAILPRICE as price, fP.newPrice as promo, ROW_NUMBER() OVER (ORDER BY i.ID) as row_num FROM itementity i JOIN furnitureentity f ON i.ID = f.ID LEFT JOIN item_countryentity ic ON i.ID = ic.ITEM_ID AND ic.COUNTRY_ID = 25 LEFT JOIN furniturePromo fP ON fP.ID = i.ID WHERE i.ISDELETED = FALSE) SELECT id, name, imageURL, sku, description, type, length, width, height, category, price, promo FROM ranked_items WHERE row_num IN (1, 2, 9, 13)';
+                    var sql = 'WITH ranked_items AS (SELECT i.ID as id, i.NAME as name, f.IMAGEURL as imageURL, i.SKU as sku, i.DESCRIPTION as description, i.TYPE as type, i._LENGTH as length, i.WIDTH as width, i.HEIGHT as height, i.CATEGORY as category, ic.RETAILPRICE as price, fP.newPrice as promo, ROW_NUMBER() OVER (ORDER BY i.ID) as row_num FROM itementity i JOIN furnitureentity f ON i.ID = f.ID LEFT JOIN item_countryentity ic ON i.ID = ic.ITEM_ID AND ic.COUNTRY_ID = 25 LEFT JOIN furniturePromo fP ON fP.ID = i.ID WHERE i.ISDELETED = FALSE) SELECT id, name, imageURL, sku, description, type, length, width, height, category, price, promo FROM ranked_items WHERE row_num IN (1, 2, 9, 13, 15, 18)';
                     ;
                     ;
                     conn.query(sql, function (err, result) {

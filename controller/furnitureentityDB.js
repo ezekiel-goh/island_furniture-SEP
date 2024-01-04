@@ -28,6 +28,18 @@ app.get('/api/getFurnitureByCat', function (req, res) {
         });
 });
 
+app.get('/api/getOffersAndPromotions', function (req, res){
+    console.log("Received request for ongoing Offers and Promotions");
+    furniture.getOffersAndPromotions()
+        .then((result) => {
+            res.send(result);
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).send("Failed to get ongoing offers and promotions");
+        });
+});
+
 app.get('/api/getLastChanceFurniture', function (req, res) {
     console.log('Received request for getLastChanceFurniture');
     furniture.getLastChanceFurniture()
