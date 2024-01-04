@@ -12,7 +12,10 @@ var storage = multer.diskStorage({
 });
 var upload = multer({ storage: storage });
 var furniture = require('../model/furnitureModel.js');
+
+
 app.get('/api/getFurnitureByCat', function (req, res) {
+    console.log('Received request for FurnitureByCat');
     var cat = req.query.cat;
     var countryId = req.query.countryId;
     furniture.getFurnitureByCat(countryId, cat)
@@ -22,6 +25,18 @@ app.get('/api/getFurnitureByCat', function (req, res) {
         .catch((err) => {
             console.log(err);
             res.status(500).send("Failed to get furniture by category");
+        });
+});
+
+app.get('/api/getLastChanceFurniture', function (req, res) {
+    console.log('Received request for getLastChanceFurniture');
+    furniture.getLastChanceFurniture()
+        .then((result) => {
+            res.send(result);
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).send("Failed to get LAST CHANCE furniture");
         });
 });
 
